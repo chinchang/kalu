@@ -71,7 +71,7 @@
 		// load demo content for new user
 		if (!content) {
 			var reqListener = function () {
-				content = this.responseText;
+				content = content || this.responseText;
 				editur.cm.setValue(content);
 				editur.cm.refresh();
 				editur.setPreviewContent(content);
@@ -80,7 +80,9 @@
 			var oReq = new XMLHttpRequest();
 			oReq.onload = reqListener;
 			oReq.open("get", "demo.html", true);
-			oReq.send();
+			// oReq.send();
+
+			reqListener("2 + 3\n\n// Keep on writing your calculations");
 		}
 		// load saved content for returning user
 		else {
