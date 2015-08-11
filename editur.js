@@ -25,7 +25,7 @@
 		var self = this;
 
 		var r1 = /(\d+.*)\n/g;
-			r2 = /(\d+.*)$/gm;
+			r2 = /([\(\d]+.*)$/gm;
 		var searches = editur.cm.getSearchCursor(r2),
 			match,
 			result,
