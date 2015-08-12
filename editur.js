@@ -50,6 +50,18 @@
 		}
 	};
 
+	function onResultClick(e) {
+		if (!e.target.classList.contains('result')) { return; }
+
+		console.log(e.target)
+		var value = e.target.textContent,
+			selections = editur.cm.listSelections();
+
+		selections.forEach(function (selection) {
+			editur.cm.replaceRange(value, selection.anchor, selection.head);
+		});
+	}
+
 	editur.cm = CodeMirror(document.body, {
 		lineNumbers: true,
 		mode:  "javascript",
@@ -90,6 +102,9 @@
 			editur.cm.setValue(content);
 			editur.cm.refresh();
 		}
+
+		document.addEventListener('touchend', onResultClick);
+		document.addEventListener('click', onResultClick);
 	}
 
 	init();

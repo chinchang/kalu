@@ -26,12 +26,29 @@
 		.cm-s-monokai .CodeMirror-linenumber {
 			opacity: 0.3;
 		}
+		.cm-s-monokai .cm-operator {
+			color: #f92672;
+		}
 		.result {
 			background: rgba(255, 255, 0, 0.8);
 			color: rgb(136, 18, 128);
 			padding: 3px;
 			transform: translate(9px, -85%);
 			border-radius: 3px;
+			z-index: 3; /* Bring over codemirror-lines so they are clickable */
+			cursor: pointer;
+			/*opacity: 0;*/
+			/*-webkit-animation: result-show 0.2s cubic-bezier(.17,.67,.85,1.31) forwards;*/
+		}
+		@-webkit-keyframes result-show {
+			from  {
+				opacity: 0;
+				transform: translate(9px, -85%) scale(0.5);
+			}
+			to  {
+				opacity: 1;
+				transform: translate(9px, -85%) scale(1);
+			}
 		}
 
 		</style>
