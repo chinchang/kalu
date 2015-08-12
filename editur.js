@@ -53,7 +53,6 @@
 	function onResultClick(e) {
 		if (!e.target.classList.contains('result')) { return; }
 
-		console.log(e.target)
 		var value = e.target.textContent,
 			selections = editur.cm.listSelections();
 
@@ -67,6 +66,7 @@
 		mode:  "javascript",
 		theme: 'monokai',
 		lineWrapping: true,
+		autoCloseBrackets: true,
 		autofocus: true
 	});
 
@@ -103,8 +103,7 @@
 			editur.cm.refresh();
 		}
 
-		document.addEventListener('touchend', onResultClick);
-		document.addEventListener('click', onResultClick);
+		document.addEventListener('mouseup', onResultClick);
 	}
 
 	init();
