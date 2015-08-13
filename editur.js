@@ -61,7 +61,7 @@
 		});
 	}
 
-	editur.cm = CodeMirror(document.body, {
+	editur.cm = CodeMirror(document.querySelector('#js-cm'), {
 		lineNumbers: true,
 		mode:  "javascript",
 		theme: 'monokai',

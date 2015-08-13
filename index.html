@@ -6,20 +6,29 @@
 		<meta name="author" content="Kushagra Gour">
 		<meta name="description" content="Calculate at speed">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,800' rel='stylesheet' type='text/css'>
 
 		<link rel="stylesheet" href="lib/codemirror/lib/codemirror.css">
 		<link rel="stylesheet" href="lib/codemirror/theme/monokai.css">
 
 		<style>
+		html, body {
+			height: 100%;
+		}
 		body {
+			overflow: hidden;
 			margin: 0;
 			padding: 0;
+			background: #272822;
+			font-family: 'open sans', sans-serif;
 		}
-
+		.cm {
+			transition: 0.25s ease 0.1s;
+		}
 		/* Codemirror */
 		.Codemirror {
 			width: 100%;
-			height: 100%;
+			height: calc(100% - 30px); /* 30px footer */
 			opacity: 0.9;
 			font-size: 1.4em;
 		}
@@ -37,30 +46,59 @@
 			border-radius: 3px;
 			z-index: 3; /* Bring over codemirror-lines so they are clickable */
 			cursor: pointer;
-			/*opacity: 0;*/
-			/*-webkit-animation: result-show 0.2s cubic-bezier(.17,.67,.85,1.31) forwards;*/
 		}
-		@-webkit-keyframes result-show {
-			from  {
-				opacity: 0;
-				transform: translate(9px, -85%) scale(0.5);
-			}
-			to  {
-				opacity: 1;
-				transform: translate(9px, -85%) scale(1);
-			}
+		.info {
+			/*font-family: monospace;*/
+			color: rgba(255, 255, 255, 0.5);
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 30px;
+			z-index: 3;
+			text-align: center;
+			background: #272822;
+			transition: 0.25s ease-out;
+		}
+		.info h2 {
+			margin: 0;
+		}
+		.info:hover {
+			position: absolute;
+			background: #22231E;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 300px;
+		}
+		.info:hover + .cm {
+			transform: translateY(-60px);
 		}
 
 		</style>
 	</head>
 
 	<body>
+		<div class="info">
+			<div>Kalu</div>
+			<p>'Kalu' is a calculator concept which aim at making long and interlinked calculations really fast.
+			</p>
+			<p>
+				<a href="">See the Source</a>
+			</p>
+			<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://kushagragour.in/lab/kalu" data-via="chinchang457" data-hashtags="calculator,ux,fast">Tweet</a>
+		</div>
+		<div id="js-cm" class="cm"></div>
+
+
 	    <script src="lib/codemirror/lib/codemirror.js"></script>
 	    <script src="lib/codemirror/mode/javascript/javascript.js"></script>
 		<script src="lib/codemirror/addon/edit/closebrackets.js"></script>
 	    <script src="lib/codemirror/addon/search/searchcursor.js"></script>
 
 	    <script src="editur.js"></script>
+
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
 	</body>
 </html>
