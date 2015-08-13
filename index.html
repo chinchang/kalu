@@ -23,12 +23,12 @@
 			font-family: 'open sans', sans-serif;
 		}
 		.cm {
-			transition: 0.25s ease 0.1s;
+			transition: 0.25s ease 90ms;
 		}
 		/* Codemirror */
 		.Codemirror {
 			width: 100%;
-			height: calc(100% - 30px); /* 30px footer */
+			height: calc(100% - 50px); /* 50px footer */
 			opacity: 0.9;
 			font-size: 1.4em;
 		}
@@ -48,13 +48,13 @@
 			cursor: pointer;
 		}
 		.info {
-			/*font-family: monospace;*/
 			color: rgba(255, 255, 255, 0.5);
 			position: absolute;
 			left: 0;
 			right: 0;
-			bottom: 0;
-			height: 30px;
+			top: calc(100vh - 50px);
+			/*height: 50px;*/
+			padding: 10px 30px 40px;
 			z-index: 3;
 			text-align: center;
 			background: #272822;
@@ -64,15 +64,12 @@
 			margin: 0;
 		}
 		.info:hover {
-			position: absolute;
 			background: #22231E;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			height: 300px;
+			transform: translateY(calc(-100% + 60px));
 		}
 		.info:hover + .cm {
-			transform: translateY(-60px);
+			transform: translateY(-50px);
+			opacity: 0.5;
 		}
 
 		</style>

@@ -59,6 +59,8 @@
 		selections.forEach(function (selection) {
 			editur.cm.replaceRange(value, selection.anchor, selection.head);
 		});
+
+		editur.cm.focus();
 	}
 
 	editur.cm = CodeMirror(document.querySelector('#js-cm'), {
