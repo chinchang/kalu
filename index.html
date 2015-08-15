@@ -64,37 +64,40 @@
 			z-index: 3;
 			text-align: center;
 			background: #272822;
-			transition: 0.25s ease-out;
+			transition: 0.25s ease;
 		}
 		.info__name {
+			cursor: pointer;
 			transition: 0.2s ease 0.15s;
 		}
-		.info:hover {
-			/*background: #22231E;*/
+
+		body.has-mouse .info:hover, #footer-checkbox:checked + label .info {
 			transform: translateY(calc(-100% + 60px));
 		}
-		.info:hover > .info__name {
+		body.has-mouse .info:hover .info__name, #footer-checkbox:checked + label .info__name {
 			font-size: 2.5em;
 		}
-		.info:hover + .cm {
+		body.has-mouse label[for="footer-checkbox"]:hover + .cm, #footer-checkbox:checked + .cm {
 			transform: translateY(-50px);
 			opacity: 0.5;
 		}
-
 		</style>
 	</head>
 
-	<body>
-		<div class="info">
-			<div class="info__name">Kalu</div>
-			<p>'Kalu' is a calculator concept which aims at making long and inter-linked calculations really fast.
-			</p>
-			<p>Developed by <a href="https://twitter.com/chinchang457">Kushagra Gour</a></p>
-			<p>
-				<a href="https://github.com/chinchang/kalu">See the Source</a>
-			</p>
-			<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://kushagragour.in/lab/kalu" data-via="chinchang457" data-hashtags="calculator,ux,fast">Tweet</a>
-		</div>
+	<body class="has-mouse">
+		<input type="checkbox" hidden id="footer-checkbox">
+		<label for="footer-checkbox">
+			<div class="info">
+				<div class="info__name">Kalu</div>
+				<p>'Kalu' is a calculator concept which aims at making long and inter-linked calculations really fast.
+				</p>
+				<p>Developed by <a href="https://twitter.com/chinchang457">Kushagra Gour</a></p>
+				<p>
+					<a href="https://github.com/chinchang/kalu">See the Source</a>
+				</p>
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://kushagragour.in/lab/kalu" data-via="chinchang457" data-hashtags="calculator,ux,fast">Tweet</a>
+			</div>
+		</label>
 		<div id="js-cm" class="cm"></div>
 
 
@@ -104,6 +107,11 @@
 	    <script src="lib/codemirror/addon/search/searchcursor.js"></script>
 
 	    <script src="script.js"></script>
+	    <script>
+		if ('ontouchend' in document) {
+			document.body.classList.remove('has-mouse');
+		}
+		</script>
 
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
