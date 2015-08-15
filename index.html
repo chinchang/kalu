@@ -69,6 +69,15 @@
 		.info__name {
 			transition: 0.2s ease 0.15s;
 		}
+		.inline-link {
+			text-transform: uppercase;
+			font-size: 0.6em;
+			margin: 0 3px;
+		}
+		.inline-link:not(:last-child):after {
+			content: '|';
+			margin-left: 10px;
+		}
 
 		body.has-mouse .info:hover, #footer-checkbox:checked + label .info {
 			transform: translateY(calc(-100% + 60px));
@@ -92,7 +101,8 @@
 				</p>
 				<p>Developed by <a href="https://twitter.com/chinchang457">Kushagra Gour</a></p>
 				<p>
-					<a href="https://github.com/chinchang/kalu">See the Source</a>
+					<a class="inline-link" href="https://github.com/chinchang/kalu">Source Code</a>
+					<a class="inline-link" href="">More projects</a>
 				</p>
 				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://kushagragour.in/lab/kalu" data-via="chinchang457" data-hashtags="calculator,ux,fast">Tweet</a>
 			</div>

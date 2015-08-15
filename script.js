@@ -40,7 +40,7 @@
 			try {
 				result = eval(match[1]);
 			} catch (e) {
-				result = 'undefined';
+				result = '...';
 			}
 			node = document.createElement('div');
 			node.classList.add('result');
@@ -96,7 +96,7 @@
 			oReq.open('get', 'demo.html', true);
 			// oReq.send();
 
-			reqListener("2 + 3\n\n/**\n - Simply keep writing your calculations.\n \n - You can click/tap any result [yellow block] \n   to use in your current calculation.\n**/\n\n");
+			reqListener("2 + 3\n\n/**\n - Simply keep writing your calculations in JavaScript.\n \n - You can click/tap any result [yellow block] \n   to use in your current calculation.\n**/\n\n");
 		}
 		// load saved content for returning user
 		else {
