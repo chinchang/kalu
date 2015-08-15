@@ -14,11 +14,11 @@
 	};
 
 	editur.saveContent = function (content) {
-		window.localStorage.editur = content;
+		window.localStorage.kalu = content;
 	};
 
 	editur.getLastSavedContent = function () {
-		return window.localStorage.editur || "";
+		return window.localStorage.kalu || '';
 	};
 
 	editur.setPreviewContent = function (content) {
@@ -65,14 +65,14 @@
 
 	editur.cm = CodeMirror(document.querySelector('#js-cm'), {
 		lineNumbers: true,
-		mode:  "javascript",
+		mode:  'javascript',
 		theme: 'monokai',
 		lineWrapping: true,
 		autoCloseBrackets: true,
 		autofocus: true
 	});
 
-	editur.cm.on("change", function (instance, change) {
+	editur.cm.on('change', function (instance, change) {
 		clearTimeout(updateTimer);
 		updateTimer = setTimeout(function () {
 			editur.setPreviewContent(instance.getValue());
@@ -84,7 +84,7 @@
 
 		// load demo content for new user
 		if (!content) {
-			var reqListener = function () {
+			var reqListener = function (content) {
 				content = content || this.responseText;
 				editur.cm.setValue(content);
 				editur.cm.refresh();
@@ -93,10 +93,10 @@
 
 			var oReq = new XMLHttpRequest();
 			oReq.onload = reqListener;
-			oReq.open("get", "demo.html", true);
+			oReq.open('get', 'demo.html', true);
 			// oReq.send();
 
-			reqListener("2 + 3\n\n// Keep on writing your calculations");
+			reqListener("2 + 3\n\n/**\n - Simply keep writing your calculations.\n \n - You can click/tap any result [yellow block] \n   to use in your current calculation.\n**/\n\n");
 		}
 		// load saved content for returning user
 		else {
@@ -104,6 +104,8 @@
 			editur.cm.setValue(content);
 			editur.cm.refresh();
 		}
+		// Position cursor to end
+		editur.cm.setCursor(editur.cm.lineCount(), 0);
 
 		document.addEventListener('mouseup', onResultClick);
 	}
