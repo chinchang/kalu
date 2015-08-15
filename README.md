@@ -8,6 +8,8 @@ Kalu
 
 ### [DEMO](http://kushagragour.in/lab/kalu)
 
+![Example](screenshot.png)
+
 Features
 ----
 
