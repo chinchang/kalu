@@ -1,9 +1,10 @@
 Kalu
 =====
+
 *Calculate at speed*
 ***
 
-'Kalu' is a calculator concept to enable very fast calculations.
+'Kalu' is a calculator concept which aims at making long and inter-linked calculations really fast.
 
 ### [DEMO](http://kushagragour.in/lab/kalu)
 
@@ -12,7 +13,7 @@ Features
 
 - No need to press ENTER to see your result. Keep typing.
 - Always see your previous calculations
-- Use your previous results easily (TODO)
+- Use your previous results by just tapping them
 
 
 License
