@@ -25,9 +25,10 @@
 		var self = this;
 
 		var r1 = /(\d+.*)\n/g;
-			r2 = /([\(\d]+.*)$/gm;
+			r2 = /(?:Math\.|[\d\(]).*$/gm;
 		var searches = editur.cm.getSearchCursor(r2),
 			match,
+			expr,
 			result,
 			node;
 
@@ -36,9 +37,10 @@
 		});
 
 		while (match = searches.findNext()) {
-			match[1] = match[1].replace(/=\s*$/, '');
+			expr = match[0]
+			expr = expr.replace(/=\s*$/, '');
 			try {
-				result = eval(match[1]);
+				result = eval(expr);
 			} catch (e) {
 				result = '...';
 			}
