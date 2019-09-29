@@ -1,0 +1,7 @@
+2 + 3
+
+5 inch to meter
+
+sin(30 deg) ^ 2
+
+// Click any result (yellow block) to reuse in current calculation
