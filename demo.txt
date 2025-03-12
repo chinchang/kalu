@@ -1,7 +1,28 @@
+// Basic calculations
 2 + 3
 
-5 inch to meter
+// Using previous results automatically
+// (Click on the result above and use it in a calculation)
+// For example: _calc0 * 4
 
+// More complex calculations
 sin(30 deg) ^ 2
 
-// Click any result (yellow block) to reuse in current calculation
+// Using multiple previous results
+// (References now show tooltips with the original calculation)
+// Try hovering over a reference to see what it points to
+// For example: _calc0 + _calc2
+
+// Unit conversions
+5 inch to cm
+
+// Try these advanced features:
+// 1. Hover over any reference to see what it points to
+// 2. Click on a reference to jump to the original calculation
+// 3. Notice how references are highlighted for better visibility
+
+// You can still use variables if you want
+radius = 5
+area = pi * radius^2
+
+// Click any result (yellow block) to reference it in your current calculation
