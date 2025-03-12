@@ -1,3 +1,6 @@
+// Welcome to Kalu - A calculator with interlinked calculations
+// Try creating multiple pages for different calculation topics!
+
 // Basic calculations
 2 + 3
 
@@ -20,6 +23,12 @@ sin(30 deg) ^ 2
 // 1. Hover over any reference to see what it points to
 // 2. Click on a reference to jump to the original calculation
 // 3. Notice how references are highlighted for better visibility
+
+// Multi-page support:
+// - Click the "+" button to create a new page
+// - Double-click on a tab title to rename it
+// - Click on a tab to switch between pages
+// - Click the "×" button on a tab to delete it
 
 // You can still use variables if you want
 radius = 5

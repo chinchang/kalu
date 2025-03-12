@@ -17,6 +17,7 @@ _Calculate at speed with automatic interlinked calculations_
 - **Automatic calculation references** - every calculation is automatically reusable
 - **Visual reference system** - references are highlighted with tooltips showing what they point to
 - **Interactive references** - hover to see the source, click to jump to it
+- **Multi-page support** - organize calculations by topic in separate pages
 - **Smart reference preservation** - references remain valid even when you:
   - Add or remove lines
   - Change calculation content
@@ -32,7 +33,19 @@ _Calculate at speed with automatic interlinked calculations_
 3. Use these references in subsequent calculations
 4. Hover over any reference to see what calculation it points to
 5. Click on a reference to jump to the original calculation
-6. Edit your document freely - references will be preserved intelligently
+6. Create new pages for different calculation topics
+7. Switch between pages using the tabs at the top
+
+## Pages and Tabs
+
+Kalu now supports multiple pages of calculations:
+
+- **Create new pages** - Click the "+" button to create a new page
+- **Switch between pages** - Click on a tab to switch to that page
+- **Rename pages** - Double-click on a tab title to rename it
+- **Delete pages** - Click the "×" button on a tab to delete it
+
+Each page has its own set of calculations and references, allowing you to organize your work by topic.
 
 ## Reference Visualization
 

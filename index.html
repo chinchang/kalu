@@ -51,6 +51,100 @@
       .cm-s-monokai .cm-operator {
         color: #f92672;
       }
+
+      /* Tabs styles */
+      #tabs-container {
+        display: flex;
+        background: #1e1f1c;
+        border-bottom: 1px solid #3e3d32;
+        height: 40px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: thin;
+        scrollbar-color: #3e3d32 #1e1f1c;
+      }
+
+      #tabs-container::-webkit-scrollbar {
+        height: 5px;
+      }
+
+      #tabs-container::-webkit-scrollbar-track {
+        background: #1e1f1c;
+      }
+
+      #tabs-container::-webkit-scrollbar-thumb {
+        background-color: #3e3d32;
+        border-radius: 6px;
+      }
+
+      .tab {
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        height: 40px;
+        background: #2d2e29;
+        color: #a6a6a6;
+        border-right: 1px solid #3e3d32;
+        cursor: pointer;
+        font-size: 0.8em;
+        user-select: none;
+        position: relative;
+        min-width: 100px;
+        max-width: 200px;
+      }
+
+      .tab.active {
+        background: #272822;
+        color: #f8f8f2;
+        border-bottom: 2px solid #f92672;
+      }
+
+      .tab-title {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .tab-close {
+        margin-left: 10px;
+        font-size: 1.2em;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+      }
+
+      .tab:hover .tab-close {
+        opacity: 1;
+      }
+
+      .tab-close:hover {
+        color: #f92672;
+      }
+
+      .new-page-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #1e1f1c;
+        color: #a6a6a6;
+        cursor: pointer;
+        font-size: 1.5em;
+        user-select: none;
+        transition: background 0.2s, color 0.2s;
+      }
+
+      .new-page-btn:hover {
+        background: #3e3d32;
+        color: #f8f8f2;
+      }
+
+      /* Adjust CodeMirror container to account for tabs */
+      #js-cm {
+        height: calc(100% - 40px);
+      }
+
       .result {
         background: rgba(255, 255, 0, 0.8);
         color: rgb(136, 18, 128);

@@ -2,18 +2,15 @@
   const kalu = window.kalu || {};
   window.kalu = kalu;
 
-  // Store for calculation results and their dependencies
-  kalu.calculations = {
-    results: {}, // Stores the results of each line
-    dependencies: {}, // Tracks which lines depend on which other lines
-    dependents: {}, // Tracks which lines are dependent on a given line
-    lineReferences: {}, // Stores references to lines by their index
-    idMapping: {}, // Maps line indices to unique IDs
-    idCounter: 0, // Counter for generating unique IDs
-    contentToId: {}, // Maps calculation content to IDs for better tracking
-    lineHistory: {}, // Tracks line position history for better ID preservation
-    referenceLabels: {}, // Stores human-readable labels for references
+  // Pages management
+  kalu.pages = {
+    list: [], // List of all pages
+    current: null, // Current active page
+    counter: 0, // Counter for generating unique page IDs
   };
+
+  // Store for calculation results and their dependencies
+  kalu.calculations = {}; // Will store calculation data for each page
 
   // Configuration
   const updateDelay = 100;
@@ -22,57 +19,215 @@
   let referenceHighlights = []; // Store reference highlight markers
   let lastContent = ""; // Store the last content for change detection
 
-  // Save content to localStorage with line ID mappings
-  kalu.saveContent = function (content) {
-    // Save the content and ID mappings
-    const saveData = {
-      content: content,
-      idMapping: kalu.calculations.idMapping,
-      idCounter: kalu.calculations.idCounter,
-      contentToId: kalu.calculations.contentToId,
-      lineHistory: kalu.calculations.lineHistory,
-      referenceLabels: kalu.calculations.referenceLabels,
-    };
-    window.localStorage.kalu = JSON.stringify(saveData);
-    lastContent = content;
+  // Generate a unique ID for a page
+  kalu.generatePageId = function () {
+    return `page${kalu.pages.counter++}`;
   };
 
-  // Get last saved content from localStorage
-  kalu.getLastSavedContent = function () {
-    try {
-      const savedData = JSON.parse(window.localStorage.kalu || "{}");
+  // Create a new page
+  kalu.createPage = function (title = "Untitled") {
+    const pageId = kalu.generatePageId();
+    const page = {
+      id: pageId,
+      title: title,
+      content: "",
+      calculations: {
+        results: {}, // Stores the results of each line
+        dependencies: {}, // Tracks which lines depend on which other lines
+        dependents: {}, // Tracks which lines are dependent on a given line
+        lineReferences: {}, // Stores references to lines by their index
+        idMapping: {}, // Maps line indices to unique IDs
+        idCounter: 0, // Counter for generating unique IDs
+        contentToId: {}, // Maps calculation content to IDs for better tracking
+        lineHistory: {}, // Tracks line position history for better ID preservation
+        referenceLabels: {}, // Stores human-readable labels for references
+      },
+    };
 
-      // Restore ID mappings if available
-      if (savedData.idMapping) {
-        kalu.calculations.idMapping = savedData.idMapping;
-      }
+    kalu.pages.list.push(page);
+    kalu.savePagesToLocalStorage();
+    return page;
+  };
 
-      // Restore ID counter if available
-      if (savedData.idCounter) {
-        kalu.calculations.idCounter = savedData.idCounter;
-      }
-
-      // Restore content to ID mapping if available
-      if (savedData.contentToId) {
-        kalu.calculations.contentToId = savedData.contentToId;
-      }
-
-      // Restore line history if available
-      if (savedData.lineHistory) {
-        kalu.calculations.lineHistory = savedData.lineHistory;
-      }
-
-      // Restore reference labels if available
-      if (savedData.referenceLabels) {
-        kalu.calculations.referenceLabels = savedData.referenceLabels;
-      }
-
-      lastContent = savedData.content || "";
-      return savedData.content || "";
-    } catch (e) {
-      // Fallback for old format
-      return window.localStorage.kalu || "";
+  // Switch to a page
+  kalu.switchToPage = function (pageId) {
+    // Save current page content if there is an active page
+    if (kalu.pages.current) {
+      kalu.savePageContent(kalu.pages.current.id, kalu.cm.getValue());
     }
+
+    // Find the page to switch to
+    const page = kalu.pages.list.find((p) => p.id === pageId);
+    if (!page) return;
+
+    // Update current page
+    kalu.pages.current = page;
+
+    // Update the editor content
+    kalu.cm.setValue(page.content);
+    kalu.cm.refresh();
+
+    // Update calculations
+    kalu.calculations = page.calculations;
+    kalu.updateCalculations();
+
+    // Update UI
+    kalu.updateTabsUI();
+
+    // Save the current page ID to localStorage
+    localStorage.setItem("kalu_current_page", pageId);
+  };
+
+  // Delete a page
+  kalu.deletePage = function (pageId) {
+    const pageIndex = kalu.pages.list.findIndex((p) => p.id === pageId);
+    if (pageIndex === -1) return;
+
+    // Remove the page
+    kalu.pages.list.splice(pageIndex, 1);
+
+    // If we deleted the current page, switch to another page
+    if (kalu.pages.current && kalu.pages.current.id === pageId) {
+      if (kalu.pages.list.length > 0) {
+        kalu.switchToPage(kalu.pages.list[0].id);
+      } else {
+        // No pages left, create a new one
+        const newPage = kalu.createPage();
+        kalu.switchToPage(newPage.id);
+      }
+    }
+
+    // Update UI and save
+    kalu.updateTabsUI();
+    kalu.savePagesToLocalStorage();
+  };
+
+  // Rename a page
+  kalu.renamePage = function (pageId, newTitle) {
+    const page = kalu.pages.list.find((p) => p.id === pageId);
+    if (!page) return;
+
+    page.title = newTitle;
+    kalu.updateTabsUI();
+    kalu.savePagesToLocalStorage();
+  };
+
+  // Save page content
+  kalu.savePageContent = function (pageId, content) {
+    const page = kalu.pages.list.find((p) => p.id === pageId);
+    if (!page) return;
+
+    page.content = content;
+    page.calculations = JSON.parse(JSON.stringify(kalu.calculations));
+    kalu.savePagesToLocalStorage();
+  };
+
+  // Save all pages to localStorage
+  kalu.savePagesToLocalStorage = function () {
+    const pagesData = {
+      list: kalu.pages.list,
+      counter: kalu.pages.counter,
+    };
+    localStorage.setItem("kalu_pages", JSON.stringify(pagesData));
+  };
+
+  // Load pages from localStorage
+  kalu.loadPagesFromLocalStorage = function () {
+    try {
+      const pagesData = JSON.parse(localStorage.getItem("kalu_pages") || "{}");
+
+      if (pagesData.list && pagesData.list.length > 0) {
+        kalu.pages.list = pagesData.list;
+        kalu.pages.counter = pagesData.counter || 0;
+
+        // Get the last active page
+        const lastPageId = localStorage.getItem("kalu_current_page");
+        const lastPage = lastPageId
+          ? kalu.pages.list.find((p) => p.id === lastPageId)
+          : null;
+
+        // Switch to the last active page or the first page
+        if (lastPage) {
+          kalu.switchToPage(lastPage.id);
+        } else {
+          kalu.switchToPage(kalu.pages.list[0].id);
+        }
+      } else {
+        // No pages found, create a default page
+        const defaultPage = kalu.createPage("Default");
+        kalu.switchToPage(defaultPage.id);
+      }
+    } catch (e) {
+      console.error("Error loading pages from localStorage:", e);
+      // Create a default page if loading fails
+      const defaultPage = kalu.createPage("Default");
+      kalu.switchToPage(defaultPage.id);
+    }
+  };
+
+  // Update the tabs UI
+  kalu.updateTabsUI = function () {
+    const tabsContainer = document.getElementById("tabs-container");
+    if (!tabsContainer) return;
+
+    // Clear existing tabs
+    tabsContainer.innerHTML = "";
+
+    // Create tabs for each page
+    kalu.pages.list.forEach((page) => {
+      const tab = document.createElement("div");
+      tab.className = "tab";
+      if (kalu.pages.current && kalu.pages.current.id === page.id) {
+        tab.classList.add("active");
+      }
+
+      // Tab title
+      const title = document.createElement("span");
+      title.className = "tab-title";
+      title.textContent = page.title;
+      title.addEventListener("dblclick", function () {
+        const newTitle = prompt("Enter new page title:", page.title);
+        if (newTitle && newTitle.trim() !== "") {
+          kalu.renamePage(page.id, newTitle.trim());
+        }
+      });
+      tab.appendChild(title);
+
+      // Close button
+      const closeBtn = document.createElement("span");
+      closeBtn.className = "tab-close";
+      closeBtn.innerHTML = "&times;";
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (
+          confirm(`Are you sure you want to delete the page "${page.title}"?`)
+        ) {
+          kalu.deletePage(page.id);
+        }
+      });
+      tab.appendChild(closeBtn);
+
+      // Tab click event
+      tab.addEventListener("click", function () {
+        kalu.switchToPage(page.id);
+      });
+
+      tabsContainer.appendChild(tab);
+    });
+
+    // Add "New Page" button
+    const newPageBtn = document.createElement("div");
+    newPageBtn.className = "new-page-btn";
+    newPageBtn.innerHTML = "+";
+    newPageBtn.title = "Create a new page";
+    newPageBtn.addEventListener("click", function () {
+      const title = prompt("Enter page title:", "Untitled");
+      if (title) {
+        const newPage = kalu.createPage(title.trim() || "Untitled");
+        kalu.switchToPage(newPage.id);
+      }
+    });
+    tabsContainer.appendChild(newPageBtn);
   };
 
   // Generate a unique ID for a calculation
@@ -291,6 +446,8 @@
 
   // Update calculation results and dependencies
   kalu.updateCalculations = function () {
+    if (!kalu.pages.current) return;
+
     const content = kalu.cm.getValue();
     const lines = content.split("\n");
     const oldResults = { ...kalu.calculations.results };
@@ -587,6 +744,13 @@
 
     // Update the UI
     kalu.updateUI();
+
+    // Save the current page content
+    if (kalu.pages.current) {
+      kalu.savePageContent(kalu.pages.current.id, content);
+    }
+
+    lastContent = content;
   };
 
   // Update the UI with calculation results
@@ -652,49 +816,38 @@
     kalu.cm.focus();
   }
 
-  // Initialize the editor
-  kalu.cm = CodeMirror(document.querySelector("#js-cm"), {
-    lineNumbers: true,
-    theme: "monokai",
-    lineWrapping: true,
-    autoCloseBrackets: true,
-    autofocus: true,
-  });
-
-  // Set up change event handler
-  kalu.cm.on("change", function (instance, change) {
-    clearTimeout(updateTimer);
-    updateTimer = setTimeout(function () {
-      kalu.updateCalculations();
-      kalu.saveContent(instance.getValue());
-    }, updateDelay);
-  });
-
   // Initialize the application
   function init() {
-    const content = kalu.getLastSavedContent();
+    // Create tabs container
+    const tabsContainer = document.createElement("div");
+    tabsContainer.id = "tabs-container";
+    document.body.insertBefore(tabsContainer, document.getElementById("js-cm"));
 
-    // Load demo content for new users
-    if (!content) {
-      fetch("./demo.txt")
-        .then((res) => res.text())
-        .then((content) => {
-          kalu.cm.setValue(content);
-          kalu.cm.refresh();
-          kalu.updateCalculations();
-        });
-    } else {
-      // Load saved content for returning users
-      kalu.cm.setValue(content);
-      kalu.cm.refresh();
-      kalu.updateCalculations();
-    }
+    // Initialize the editor
+    kalu.cm = CodeMirror(document.querySelector("#js-cm"), {
+      lineNumbers: true,
+      theme: "monokai",
+      lineWrapping: true,
+      autoCloseBrackets: true,
+      autofocus: true,
+    });
 
-    // Position cursor at the end
-    kalu.cm.setCursor(kalu.cm.lineCount(), 0);
+    // Set up change event handler
+    kalu.cm.on("change", function (instance, change) {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(function () {
+        kalu.updateCalculations();
+      }, updateDelay);
+    });
+
+    // Load pages from localStorage or create default page
+    kalu.loadPagesFromLocalStorage();
 
     // Set up event listeners
     document.addEventListener("mouseup", onResultClick);
+
+    // Update tabs UI
+    kalu.updateTabsUI();
   }
 
   // Start the application
