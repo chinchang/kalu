@@ -6,7 +6,7 @@ _Calculate at speed with automatic interlinked calculations_
 
 'Kalu' is a calculator concept which aims at making long and inter-linked calculations really fast and intuitive.
 
-### [DEMO](http://kushagragour.in/lab/kalu)
+### [DEMO](https://kushagra.dev/lab/kalu)
 
 ![Example](screenshot.png)
 
@@ -76,5 +76,5 @@ The calculator uses a smart tracking system to preserve references when you:
 
 ## License
 
-Copyright (c) 2015 Kushagra Gour, http://kushagragour.in
+Copyright (c) 2015 Kushagra Gour, https://kushagra.dev
 Licensed under the [MIT license](http://opensource.org/licenses/MIT).
