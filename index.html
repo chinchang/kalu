@@ -24,40 +24,45 @@
     <style>
       /* ─── Design tokens ─────────────────────────────────── */
       :root {
-        --bg-deep:    #080e16;
-        --bg-base:    #0d1520;
+        --bg-deep: #080e16;
+        --bg-base: #0d1520;
         --bg-surface: #131d2a;
-        --bg-raised:  #182636;
+        --bg-raised: #182636;
 
-        --accent:     #00d4aa;
+        --accent: #00d4aa;
         --accent-rgb: 0, 212, 170;
         --accent-dim: rgba(var(--accent-rgb), 0.6);
         --accent-glow: rgba(var(--accent-rgb), 0.15);
-        --border:     rgba(var(--accent-rgb), 0.1);
+        --border: rgba(var(--accent-rgb), 0.1);
         --border-strong: rgba(var(--accent-rgb), 0.2);
 
-        --gold:       #f0c674;
-        --gold-dim:   rgba(240, 198, 116, 0.85);
-        --pink:       #ff6b8a;
-        --blue:       #82c4fa;
+        --gold: #f0c674;
+        --gold-dim: rgba(240, 198, 116, 0.85);
+        --pink: #ff6b8a;
+        --blue: #82c4fa;
 
-        --text:       #c8d3e0;
-        --text-dim:   #5a6d82;
+        --text: #c8d3e0;
+        --text-dim: #5a6d82;
         --text-muted: #3a4a5c;
 
-        --font-ui:    'DM Sans', system-ui, sans-serif;
-        --font-mono:  'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        --font-ui: "DM Sans", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
 
-        --radius:     8px;
-        --radius-sm:  5px;
+        --radius: 8px;
+        --radius-sm: 5px;
 
-        --tab-h:      44px;
+        --tab-h: 44px;
       }
 
       /* ─── Reset & base ──────────────────────────────────── */
-      *, *::before, *::after { box-sizing: border-box; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-      html, body {
+      html,
+      body {
         height: 100%;
         margin: 0;
         padding: 0;
@@ -75,7 +80,7 @@
 
       /* Noise grain overlay for depth */
       body::before {
-        content: '';
+        content: "";
         position: fixed;
         inset: 0;
         z-index: 0;
@@ -88,20 +93,29 @@
 
       /* Subtle top glow */
       body::after {
-        content: '';
+        content: "";
         position: fixed;
         top: -120px;
         left: 50%;
         transform: translateX(-50%);
         width: 600px;
         height: 300px;
-        background: radial-gradient(ellipse, rgba(var(--accent-rgb),0.06) 0%, transparent 70%);
+        background: radial-gradient(
+          ellipse,
+          rgba(var(--accent-rgb), 0.06) 0%,
+          transparent 70%
+        );
         z-index: 0;
         pointer-events: none;
       }
 
-      a { color: var(--accent); text-decoration: none; }
-      a:hover { text-decoration: underline; }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
 
       /* ─── Layout wrapper ────────────────────────────────── */
       .app-shell {
@@ -142,7 +156,11 @@
         width: 26px;
         height: 26px;
         border-radius: 6px;
-        background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), 0.7));
+        background: linear-gradient(
+          135deg,
+          var(--accent),
+          rgba(var(--accent-rgb), 0.7)
+        );
         color: var(--bg-deep);
         font-size: 13px;
         font-weight: 600;
@@ -195,8 +213,12 @@
         padding-left: 4px;
       }
 
-      #tabs-container::-webkit-scrollbar { height: 3px; }
-      #tabs-container::-webkit-scrollbar-track { background: var(--bg-base); }
+      #tabs-container::-webkit-scrollbar {
+        height: 3px;
+      }
+      #tabs-container::-webkit-scrollbar-track {
+        background: var(--bg-base);
+      }
       #tabs-container::-webkit-scrollbar-thumb {
         background: var(--bg-raised);
         border-radius: 3px;
@@ -218,7 +240,9 @@
         white-space: nowrap;
         min-width: 90px;
         max-width: 180px;
-        transition: color 0.15s, background 0.15s;
+        transition:
+          color 0.15s,
+          background 0.15s;
         border-right: 1px solid var(--border);
       }
 
@@ -234,7 +258,7 @@
       }
 
       .tab.active::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 0;
         left: 8px;
@@ -246,8 +270,12 @@
       }
 
       @keyframes tabSlide {
-        from { transform: scaleX(0); }
-        to   { transform: scaleX(1); }
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
       }
 
       .tab-title {
@@ -266,11 +294,16 @@
         font-size: 14px;
         line-height: 1;
         opacity: 0;
-        transition: opacity 0.15s, background 0.15s, color 0.15s;
+        transition:
+          opacity 0.15s,
+          background 0.15s,
+          color 0.15s;
         flex-shrink: 0;
       }
 
-      .tab:hover .tab-close { opacity: 0.6; }
+      .tab:hover .tab-close {
+        opacity: 0.6;
+      }
       .tab-close:hover {
         opacity: 1 !important;
         background: rgba(255, 107, 138, 0.15);
@@ -288,7 +321,9 @@
         cursor: pointer;
         font-size: 18px;
         user-select: none;
-        transition: color 0.15s, background 0.15s;
+        transition:
+          color 0.15s,
+          background 0.15s;
       }
 
       .new-page-btn:hover {
@@ -327,33 +362,44 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        background: linear-gradient(135deg, rgba(240,198,116,0.18) 0%, rgba(240,198,116,0.10) 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(240, 198, 116, 0.18) 0%,
+          rgba(240, 198, 116, 0.1) 100%
+        );
         color: var(--gold);
         font-family: var(--font-mono);
         font-size: 13px;
         font-weight: 500;
-        padding: 2px 10px;
+        padding: 0 10px;
         margin-left: 12px;
         border-radius: 4px;
         border: 1px solid rgba(240, 198, 116, 0.2);
         cursor: pointer;
-        transform: translate(9px, -85%);
+        transform: translate(9px, -100%);
         z-index: 3;
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
-        transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          box-shadow 0.15s;
         white-space: nowrap;
       }
 
       .result::before {
-        content: '=';
+        content: "=";
         color: rgba(240, 198, 116, 0.4);
         font-size: 11px;
         margin-right: 1px;
       }
 
       .result:hover {
-        background: linear-gradient(135deg, rgba(240,198,116,0.28) 0%, rgba(240,198,116,0.16) 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(240, 198, 116, 0.28) 0%,
+          rgba(240, 198, 116, 0.16) 100%
+        );
         border-color: rgba(240, 198, 116, 0.4);
         box-shadow: 0 0 16px rgba(240, 198, 116, 0.1);
       }
@@ -372,7 +418,9 @@
         font-family: var(--font-mono);
         font-size: 0.92em;
         border: 1px solid rgba(var(--accent-rgb), 0.15);
-        transition: background 0.15s, border-color 0.15s;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
       }
 
       .reference-highlight:hover {
@@ -381,7 +429,7 @@
       }
 
       .reference-highlight::after {
-        content: '\2197';
+        content: "\2197";
         font-size: 0.75em;
         margin-left: 3px;
         opacity: 0.5;
@@ -398,12 +446,6 @@
       }
 
       /* ─── Tooltips ──────────────────────────────────────── */
-      .result[title],
-      .reference-highlight[title] {
-        position: relative;
-      }
-
-      .result[title]:hover::before,
       .reference-highlight[title]:hover::before {
         content: attr(title);
         position: absolute;
@@ -424,10 +466,7 @@
         animation: tooltipIn 0.15s ease-out;
       }
 
-      /* Override: result badges use ::before for "=" sign, so use ::after for tooltip */
-      .result[title]:hover::before {
-        content: '=';
-      }
+      /* Result badges use ::before for "=", so tooltip goes on ::after */
       .result[title]:hover::after {
         content: attr(title);
         position: absolute;
@@ -449,8 +488,14 @@
       }
 
       @keyframes tooltipIn {
-        from { opacity: 0; transform: translateY(4px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       /* ─── Footer ──────────────────────────────────────── */
@@ -483,8 +528,14 @@
 
       /* ─── Entrance animation ────────────────────────────── */
       @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .app-shell {
@@ -504,7 +555,9 @@
         background: transparent;
         color: var(--text-dim);
         cursor: pointer;
-        transition: color 0.2s, background 0.2s;
+        transition:
+          color 0.2s,
+          background 0.2s;
       }
 
       .settings-btn:hover {
@@ -579,7 +632,9 @@
         color: var(--text-dim);
         font-size: 20px;
         cursor: pointer;
-        transition: color 0.15s, background 0.15s;
+        transition:
+          color 0.15s,
+          background 0.15s;
       }
 
       .settings-close:hover {
@@ -623,7 +678,10 @@
         background: var(--sw);
         cursor: pointer;
         padding: 0;
-        transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+        transition:
+          border-color 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s;
         outline: none;
       }
 
@@ -634,7 +692,9 @@
 
       .swatch.active {
         border-color: var(--text);
-        box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--sw);
+        box-shadow:
+          0 0 0 2px var(--bg-surface),
+          0 0 0 4px var(--sw);
       }
 
       .swatch-check {
@@ -692,10 +752,20 @@
 
       /* ─── Responsive ────────────────────────────────────── */
       @media (max-width: 600px) {
-        .header-tagline { display: none; }
-        .header-links { gap: 8px; }
-        .CodeMirror { font-size: 14px; }
-        .tab { min-width: 70px; padding: 0 10px; font-size: 12px; }
+        .header-tagline {
+          display: none;
+        }
+        .header-links {
+          gap: 8px;
+        }
+        .CodeMirror {
+          font-size: 14px;
+        }
+        .tab {
+          min-width: 70px;
+          padding: 0 10px;
+          font-size: 12px;
+        }
       }
     </style>
   </head>
@@ -712,16 +782,33 @@
           <span class="header-brand-icon">K</span>
           Kalu
         </div>
-        <span class="header-tagline">A calculator for long, interlinked calculations</span>
+        <span class="header-tagline"
+          >A calculator for long, interlinked calculations</span
+        >
         <nav class="header-links">
-          <a class="header-link" href="https://github.com/chinchang/kalu">GitHub</a>
+          <a class="header-link" href="https://github.com/chinchang/kalu"
+            >GitHub</a
+          >
           <span class="header-link-sep"></span>
-          <a class="header-link" href="https://kushagra.dev/lab/">More projects</a>
+          <a class="header-link" href="https://kushagra.dev/lab/"
+            >More projects</a
+          >
           <span class="header-link-sep"></span>
           <button id="settings-btn" class="settings-btn" aria-label="Settings">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
             </svg>
           </button>
         </nav>
@@ -734,25 +821,66 @@
     <aside id="settings-pane" class="settings-pane">
       <div class="settings-header">
         <span class="settings-title">Settings</span>
-        <button id="settings-close" class="settings-close" aria-label="Close settings">&times;</button>
+        <button
+          id="settings-close"
+          class="settings-close"
+          aria-label="Close settings"
+        >
+          &times;
+        </button>
       </div>
       <div class="settings-body">
         <div class="settings-section">
           <label class="settings-label">Accent Color</label>
           <div id="accent-swatches" class="accent-swatches">
-            <button class="swatch active" data-accent="green" data-color="#00d4aa" data-rgb="0,212,170" style="--sw: #00d4aa" aria-label="Green accent">
+            <button
+              class="swatch active"
+              data-accent="green"
+              data-color="#00d4aa"
+              data-rgb="0,212,170"
+              style="--sw: #00d4aa"
+              aria-label="Green accent"
+            >
               <span class="swatch-check">&#10003;</span>
             </button>
-            <button class="swatch" data-accent="orange" data-color="#f0a050" data-rgb="240,160,80" style="--sw: #f0a050" aria-label="Orange accent">
+            <button
+              class="swatch"
+              data-accent="orange"
+              data-color="#f0a050"
+              data-rgb="240,160,80"
+              style="--sw: #f0a050"
+              aria-label="Orange accent"
+            >
               <span class="swatch-check">&#10003;</span>
             </button>
-            <button class="swatch" data-accent="pink" data-color="#ff6b8a" data-rgb="255,107,138" style="--sw: #ff6b8a" aria-label="Pink accent">
+            <button
+              class="swatch"
+              data-accent="pink"
+              data-color="#ff6b8a"
+              data-rgb="255,107,138"
+              style="--sw: #ff6b8a"
+              aria-label="Pink accent"
+            >
               <span class="swatch-check">&#10003;</span>
             </button>
-            <button class="swatch" data-accent="white" data-color="#c8d3e0" data-rgb="200,211,224" style="--sw: #c8d3e0" aria-label="White accent">
+            <button
+              class="swatch"
+              data-accent="white"
+              data-color="#c8d3e0"
+              data-rgb="200,211,224"
+              style="--sw: #c8d3e0"
+              aria-label="White accent"
+            >
               <span class="swatch-check">&#10003;</span>
             </button>
-            <button class="swatch" data-accent="yellow" data-color="#f0c674" data-rgb="240,198,116" style="--sw: #f0c674" aria-label="Yellow accent">
+            <button
+              class="swatch"
+              data-accent="yellow"
+              data-color="#f0c674"
+              data-rgb="240,198,116"
+              style="--sw: #f0c674"
+              aria-label="Yellow accent"
+            >
               <span class="swatch-check">&#10003;</span>
             </button>
           </div>
@@ -769,24 +897,24 @@
 
     <script src="script.js"></script>
     <script>
-      if ('ontouchend' in document) {
-        document.body.classList.remove('has-mouse');
+      if ("ontouchend" in document) {
+        document.body.classList.remove("has-mouse");
       }
     </script>
 
     <script>
       var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-19798102-1']);
-      _gaq.push(['_trackPageview']);
+      _gaq.push(["_setAccount", "UA-19798102-1"]);
+      _gaq.push(["_trackPageview"]);
       (function () {
-        var ga = document.createElement('script');
-        ga.type = 'text/javascript';
+        var ga = document.createElement("script");
+        ga.type = "text/javascript";
         ga.async = !0;
         ga.src =
-          ('https:' == document.location.protocol
-            ? 'https://ssl'
-            : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
+          ("https:" == document.location.protocol
+            ? "https://ssl"
+            : "http://www") + ".google-analytics.com/ga.js";
+        var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(ga, s);
       })();
     </script>
