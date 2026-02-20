@@ -11,242 +11,550 @@
       content="A calculator concept for long and inter-linked calculations"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <link
-      href="http://fonts.googleapis.com/css?family=Slabo+27px&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
 
     <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css" />
-    <link rel="stylesheet" href="lib/codemirror/theme/monokai.css" />
+    <link rel="stylesheet" href="lib/codemirror/theme/kalu-dark.css" />
 
     <style>
-      html,
-      body {
-        height: 100%;
+      /* ─── Design tokens ─────────────────────────────────── */
+      :root {
+        --bg-deep:    #080e16;
+        --bg-base:    #0d1520;
+        --bg-surface: #131d2a;
+        --bg-raised:  #182636;
+        --border:     rgba(0, 212, 170, 0.1);
+        --border-strong: rgba(0, 212, 170, 0.2);
+
+        --teal:       #00d4aa;
+        --teal-dim:   rgba(0, 212, 170, 0.6);
+        --teal-glow:  rgba(0, 212, 170, 0.15);
+        --gold:       #f0c674;
+        --gold-dim:   rgba(240, 198, 116, 0.85);
+        --pink:       #ff6b8a;
+        --blue:       #82c4fa;
+
+        --text:       #c8d3e0;
+        --text-dim:   #5a6d82;
+        --text-muted: #3a4a5c;
+
+        --font-ui:    'DM Sans', system-ui, sans-serif;
+        --font-mono:  'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+        --radius:     8px;
+        --radius-sm:  5px;
+
+        --tab-h:      44px;
+        --footer-h:   52px;
       }
-      body {
-        overflow: hidden;
+
+      /* ─── Reset & base ──────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; }
+
+      html, body {
+        height: 100%;
         margin: 0;
         padding: 0;
-        background: #272822;
-        font-size: 150%;
-        font-family: "Slabo 27px", sans-serif;
-      }
-      a {
-        color: #66d9ef;
-      }
-      .cm {
-        transition: 0.25s ease 90ms;
-      }
-      /* Codemirror */
-      .Codemirror {
-        width: 100%;
-        height: calc(100% - 50px); /* 50px footer */
-        opacity: 0.9;
-        font-size: 1.4em;
-      }
-      .cm-s-monokai .CodeMirror-linenumber {
-        opacity: 0.3;
-      }
-      .cm-s-monokai .cm-operator {
-        color: #f92672;
       }
 
-      /* Tabs styles */
+      body {
+        overflow: hidden;
+        background: var(--bg-deep);
+        color: var(--text);
+        font-family: var(--font-ui);
+        font-size: 15px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Noise grain overlay for depth */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.025;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 256px 256px;
+      }
+
+      /* Subtle top glow */
+      body::after {
+        content: '';
+        position: fixed;
+        top: -120px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 300px;
+        background: radial-gradient(ellipse, rgba(0,212,170,0.06) 0%, transparent 70%);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      a { color: var(--teal); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      /* ─── Layout wrapper ────────────────────────────────── */
+      .app-shell {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* ─── Header bar ────────────────────────────────────── */
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 48px;
+        padding: 0 20px;
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--teal);
+        letter-spacing: -0.5px;
+      }
+
+      .header-brand-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--teal), #00a88a);
+        color: var(--bg-deep);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .header-tagline {
+        color: var(--text-dim);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+      }
+
+      .header-links {
+        margin-left: auto;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .header-link {
+        color: var(--text-dim);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        transition: color 0.2s;
+      }
+
+      .header-link:hover {
+        color: var(--teal);
+        text-decoration: none;
+      }
+
+      .header-link-sep {
+        width: 1px;
+        height: 14px;
+        background: var(--border-strong);
+      }
+
+      /* ─── Tabs ──────────────────────────────────────────── */
       #tabs-container {
         display: flex;
-        background: #1e1f1c;
-        border-bottom: 1px solid #3e3d32;
-        height: 40px;
+        align-items: stretch;
+        background: var(--bg-base);
+        border-bottom: 1px solid var(--border);
+        height: var(--tab-h);
         overflow-x: auto;
-        white-space: nowrap;
+        overflow-y: hidden;
+        flex-shrink: 0;
         scrollbar-width: thin;
-        scrollbar-color: #3e3d32 #1e1f1c;
+        scrollbar-color: var(--bg-raised) var(--bg-base);
+        padding-left: 4px;
       }
 
-      #tabs-container::-webkit-scrollbar {
-        height: 5px;
-      }
-
-      #tabs-container::-webkit-scrollbar-track {
-        background: #1e1f1c;
-      }
-
+      #tabs-container::-webkit-scrollbar { height: 3px; }
+      #tabs-container::-webkit-scrollbar-track { background: var(--bg-base); }
       #tabs-container::-webkit-scrollbar-thumb {
-        background-color: #3e3d32;
-        border-radius: 6px;
+        background: var(--bg-raised);
+        border-radius: 3px;
       }
 
       .tab {
+        position: relative;
         display: flex;
         align-items: center;
-        padding: 0 15px;
-        height: 40px;
-        background: #2d2e29;
-        color: #a6a6a6;
-        border-right: 1px solid #3e3d32;
+        gap: 8px;
+        padding: 0 16px;
+        height: var(--tab-h);
+        color: var(--text-dim);
         cursor: pointer;
-        font-size: 0.8em;
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
         user-select: none;
-        position: relative;
-        min-width: 100px;
-        max-width: 200px;
+        white-space: nowrap;
+        min-width: 90px;
+        max-width: 180px;
+        transition: color 0.15s, background 0.15s;
+        border-right: 1px solid var(--border);
+      }
+
+      .tab:hover {
+        color: var(--text);
+        background: rgba(0, 212, 170, 0.03);
       }
 
       .tab.active {
-        background: #272822;
-        color: #f8f8f2;
-        border-bottom: 2px solid #f92672;
+        color: var(--teal);
+        background: var(--bg-surface);
+        font-weight: 500;
+      }
+
+      .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+        height: 2px;
+        background: var(--teal);
+        border-radius: 2px 2px 0 0;
+        animation: tabSlide 0.25s ease-out;
+      }
+
+      @keyframes tabSlide {
+        from { transform: scaleX(0); }
+        to   { transform: scaleX(1); }
       }
 
       .tab-title {
         flex: 1;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
       }
 
       .tab-close {
-        margin-left: 10px;
-        font-size: 1.2em;
-        opacity: 0.5;
-        transition: opacity 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 1;
+        opacity: 0;
+        transition: opacity 0.15s, background 0.15s, color 0.15s;
+        flex-shrink: 0;
       }
 
-      .tab:hover .tab-close {
-        opacity: 1;
-      }
-
+      .tab:hover .tab-close { opacity: 0.6; }
       .tab-close:hover {
-        color: #f92672;
+        opacity: 1 !important;
+        background: rgba(255, 107, 138, 0.15);
+        color: var(--pink);
       }
 
       .new-page-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
-        background: #1e1f1c;
-        color: #a6a6a6;
+        width: 38px;
+        min-width: 38px;
+        height: var(--tab-h);
+        color: var(--text-muted);
         cursor: pointer;
-        font-size: 1.5em;
+        font-size: 18px;
         user-select: none;
-        transition: background 0.2s, color 0.2s;
+        transition: color 0.15s, background 0.15s;
       }
 
       .new-page-btn:hover {
-        background: #3e3d32;
-        color: #f8f8f2;
+        color: var(--teal);
+        background: var(--teal-glow);
       }
 
-      /* Adjust CodeMirror container to account for tabs */
+      /* ─── Editor container ──────────────────────────────── */
       #js-cm {
-        height: calc(100% - 40px);
+        flex: 1;
+        min-height: 0;
+        position: relative;
       }
 
+      .CodeMirror {
+        width: 100%;
+        height: 100% !important;
+        font-family: var(--font-mono);
+        font-size: 15px;
+        line-height: 1.7;
+        letter-spacing: -0.01em;
+        padding-top: 4px;
+      }
+
+      .CodeMirror-lines {
+        padding: 8px 0;
+      }
+
+      .CodeMirror pre.CodeMirror-line,
+      .CodeMirror pre.CodeMirror-line-like {
+        padding: 0 12px 0 6px;
+      }
+
+      /* ─── Result badges ─────────────────────────────────── */
       .result {
-        background: rgba(255, 255, 0, 0.8);
-        color: rgb(136, 18, 128);
-        padding: 3px;
-        transform: translate(9px, -85%);
-        border-radius: 3px;
-        z-index: 3; /* Bring over codemirror-lines so they are clickable */
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: linear-gradient(135deg, rgba(240,198,116,0.18) 0%, rgba(240,198,116,0.10) 100%);
+        color: var(--gold);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 2px 10px;
+        margin-left: 12px;
+        border-radius: 4px;
+        border: 1px solid rgba(240, 198, 116, 0.2);
         cursor: pointer;
+        transform: translate(9px, -85%);
+        z-index: 3;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+        white-space: nowrap;
       }
 
-      /* Reference highlight styles */
+      .result::before {
+        content: '=';
+        color: rgba(240, 198, 116, 0.4);
+        font-size: 11px;
+        margin-right: 1px;
+      }
+
+      .result:hover {
+        background: linear-gradient(135deg, rgba(240,198,116,0.28) 0%, rgba(240,198,116,0.16) 100%);
+        border-color: rgba(240, 198, 116, 0.4);
+        box-shadow: 0 0 16px rgba(240, 198, 116, 0.1);
+      }
+
+      /* ─── Reference highlights ──────────────────────────── */
       .reference-highlight {
-        background: rgba(102, 217, 239, 0.3);
-        color: #66d9ef;
+        display: inline-flex;
+        align-items: center;
+        background: rgba(0, 212, 170, 0.12);
+        color: var(--teal);
         border-radius: 3px;
-        padding: 2px 4px;
+        padding: 1px 6px;
         cursor: pointer;
         position: relative;
-        font-weight: bold;
+        font-weight: 500;
+        font-family: var(--font-mono);
+        font-size: 0.92em;
+        border: 1px solid rgba(0, 212, 170, 0.15);
+        transition: background 0.15s, border-color 0.15s;
       }
 
       .reference-highlight:hover {
-        background: rgba(102, 217, 239, 0.5);
+        background: rgba(0, 212, 170, 0.22);
+        border-color: rgba(0, 212, 170, 0.35);
       }
 
       .reference-highlight::after {
-        content: "↗";
-        font-size: 0.8em;
-        vertical-align: super;
-        margin-left: 2px;
+        content: '\2197';
+        font-size: 0.75em;
+        margin-left: 3px;
+        opacity: 0.5;
       }
 
-      /* Line highlight styles */
+      /* ─── Line highlighting ─────────────────────────────── */
       .highlighted-line {
-        background: rgba(102, 217, 239, 0.1);
+        background: rgba(0, 212, 170, 0.05) !important;
       }
 
       .target-line-highlight {
-        background: rgba(102, 217, 239, 0.3);
+        background: rgba(0, 212, 170, 0.12) !important;
         transition: background 0.5s ease-out;
       }
 
-      /* Tooltip styles */
-      [title] {
+      /* ─── Tooltips ──────────────────────────────────────── */
+      .result[title],
+      .reference-highlight[title] {
         position: relative;
       }
 
-      [title]:hover::before {
+      .result[title]:hover::before,
+      .reference-highlight[title]:hover::before {
         content: attr(title);
         position: absolute;
-        bottom: 100%;
+        bottom: calc(100% + 6px);
         left: 0;
-        background: #272822;
-        color: #f8f8f2;
+        background: var(--bg-raised);
+        color: var(--text);
         padding: 5px 10px;
-        border-radius: 3px;
-        border: 1px solid #66d9ef;
-        font-size: 0.8em;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-strong);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 400;
         white-space: nowrap;
-        z-index: 10;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        z-index: 50;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        animation: tooltipIn 0.15s ease-out;
       }
 
+      /* Override: result badges use ::before for "=" sign, so use ::after for tooltip */
+      .result[title]:hover::before {
+        content: '=';
+      }
+      .result[title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 0;
+        background: var(--bg-raised);
+        color: var(--text);
+        padding: 5px 10px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-strong);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 400;
+        white-space: nowrap;
+        z-index: 50;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        animation: tooltipIn 0.15s ease-out;
+      }
+
+      @keyframes tooltipIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ─── Info / footer panel ───────────────────────────── */
       .info {
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--text-dim);
         position: absolute;
         left: 0;
         right: 0;
-        top: calc(100vh - 65px);
-        font-size: 1.5em;
-        font-weight: 200;
-        padding: 10px 30px 50px;
-        z-index: 3;
+        top: calc(100vh - var(--footer-h));
+        font-size: 13px;
+        padding: 12px 30px 40px;
+        z-index: 10;
         text-align: center;
-        background: #272822;
-        transition: 0.55s cubic-bezier(0.77, -0.03, 0.25, 1);
+        background: var(--bg-surface);
+        border-top: 1px solid var(--border);
+        transition: 0.5s cubic-bezier(0.77, -0.03, 0.25, 1);
       }
+
       .info__name {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 1.1em;
+        color: var(--teal);
+        letter-spacing: -0.5px;
         transition: 0.25s ease 0.15s;
       }
+
+      .info p { margin: 6px 0; line-height: 1.5; }
+
       .inline-link {
         text-transform: uppercase;
-        font-size: 0.6em;
-        margin: 0 3px;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        margin: 0 4px;
+        color: var(--text-dim);
+        transition: color 0.2s;
       }
-      .inline-link:not(:last-child):after {
-        content: "|";
+
+      .inline-link:hover { color: var(--teal); }
+
+      .inline-link:not(:last-child)::after {
+        content: '';
+        display: inline-block;
+        width: 1px;
+        height: 10px;
+        background: var(--border-strong);
         margin-left: 10px;
+        vertical-align: middle;
       }
 
       body.has-mouse .info:hover,
       #footer-checkbox:checked + label .info {
-        transform: translateY(calc(-100% + 60px));
+        transform: translateY(calc(-100% + var(--footer-h)));
       }
+
       body.has-mouse .info:hover .info__name,
       #footer-checkbox:checked + label .info__name {
-        font-size: 2.5em;
+        font-size: 1.8em;
       }
-      body.has-mouse label[for="footer-checkbox"]:hover + .cm,
-      #footer-checkbox:checked + .cm {
-        transform: translateY(-50px);
-        opacity: 0.5;
+
+      /* Dim the editor when footer opens */
+      body.has-mouse label[for='footer-checkbox']:hover ~ .app-shell,
+      #footer-checkbox:checked ~ .app-shell {
+        opacity: 0.4;
+        transform: translateY(-30px);
+        transition: 0.4s cubic-bezier(0.77, -0.03, 0.25, 1);
+      }
+
+      .app-shell {
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+
+      .twitter-share-button {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 4px 14px;
+        background: var(--bg-raised);
+        color: var(--text-dim);
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        border: 1px solid var(--border);
+        transition: border-color 0.2s, color 0.2s;
+      }
+
+      .twitter-share-button:hover {
+        border-color: var(--border-strong);
+        color: var(--teal);
+        text-decoration: none;
+      }
+
+      /* ─── Entrance animation ────────────────────────────── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .app-shell {
+        animation: fadeUp 0.4s ease-out;
+      }
+
+      /* ─── Responsive ────────────────────────────────────── */
+      @media (max-width: 600px) {
+        .header-tagline { display: none; }
+        .header-links { gap: 8px; }
+        .CodeMirror { font-size: 14px; }
+        .tab { min-width: 70px; padding: 0 10px; font-size: 12px; }
       }
     </style>
   </head>
@@ -282,7 +590,22 @@
         >
       </div>
     </label>
-    <div id="js-cm" class="cm"></div>
+
+    <div class="app-shell">
+      <header class="header">
+        <div class="header-brand">
+          <span class="header-brand-icon">K</span>
+          Kalu
+        </div>
+        <span class="header-tagline">Interlinked calculations, instantly</span>
+        <nav class="header-links">
+          <a class="header-link" href="https://github.com/chinchang/kalu">GitHub</a>
+          <span class="header-link-sep"></span>
+          <a class="header-link" href="https://kushagra.dev/lab/">More projects</a>
+        </nav>
+      </header>
+      <div id="js-cm" class="cm"></div>
+    </div>
 
     <script src="lib/codemirror/lib/codemirror.js"></script>
     <script src="lib/codemirror/mode/javascript/javascript.js"></script>
@@ -292,24 +615,24 @@
 
     <script src="script.js"></script>
     <script>
-      if ("ontouchend" in document) {
-        document.body.classList.remove("has-mouse");
+      if ('ontouchend' in document) {
+        document.body.classList.remove('has-mouse');
       }
     </script>
 
     <script>
       var _gaq = _gaq || [];
-      _gaq.push(["_setAccount", "UA-19798102-1"]);
-      _gaq.push(["_trackPageview"]);
+      _gaq.push(['_setAccount', 'UA-19798102-1']);
+      _gaq.push(['_trackPageview']);
       (function () {
-        var ga = document.createElement("script");
-        ga.type = "text/javascript";
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
         ga.async = !0;
         ga.src =
-          ("https:" == document.location.protocol
-            ? "https://ssl"
-            : "http://www") + ".google-analytics.com/ga.js";
-        var s = document.getElementsByTagName("script")[0];
+          ('https:' == document.location.protocol
+            ? 'https://ssl'
+            : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
         s.parentNode.insertBefore(ga, s);
       })();
     </script>

@@ -818,15 +818,16 @@
 
   // Initialize the application
   function init() {
-    // Create tabs container
+    // Create tabs container inside app-shell, before the editor
     const tabsContainer = document.createElement("div");
     tabsContainer.id = "tabs-container";
-    document.body.insertBefore(tabsContainer, document.getElementById("js-cm"));
+    const cmEl = document.getElementById("js-cm");
+    cmEl.parentNode.insertBefore(tabsContainer, cmEl);
 
     // Initialize the editor
     kalu.cm = CodeMirror(document.querySelector("#js-cm"), {
       lineNumbers: true,
-      theme: "monokai",
+      theme: "kalu-dark",
       lineWrapping: true,
       autoCloseBrackets: true,
       autofocus: true,

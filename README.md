@@ -76,5 +76,5 @@ The calculator uses a smart tracking system to preserve references when you:
 
 ## License
 
-Copyright (c) 2015 Kushagra Gour, https://kushagra.dev
+Copyright (c) 2025 Kushagra Gour, https://kushagra.dev
 Licensed under the [MIT license](http://opensource.org/licenses/MIT).
