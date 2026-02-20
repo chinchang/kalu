@@ -616,6 +616,9 @@
     kalu.calculations.contentToId = newContentToId;
     kalu.calculations.lineHistory = newLineHistory;
 
+    // Expose variables for autocomplete
+    kalu.currentVariables = variables;
+
     // Second pass: evaluate expressions and build dependency graph
     lines.forEach((line, lineIndex) => {
       if (line.trim() === "" || line.match(/^\s*\/\//)) {
@@ -892,6 +895,56 @@
     kalu.cm.focus();
   }
 
+  // ─── Autocomplete hint function ─────────────────────
+  function kaluHint(cm) {
+    var cur = cm.getCursor();
+    var line = cm.getLine(cur.line);
+
+    // Find the word being typed
+    var end = cur.ch, start = end;
+    while (start && /[\w]/.test(line.charAt(start - 1))) --start;
+    var typed = line.slice(start, end).toLowerCase();
+
+    if (!typed) return;
+
+    var completions = [];
+    var vars = kalu.currentVariables || {};
+
+    // Collect named variables (skip the one being defined on the current line)
+    Object.keys(vars).forEach(function (name) {
+      var lineIdx = vars[name];
+      if (lineIdx === cur.line) return;
+      if (name.toLowerCase().indexOf(typed) !== 0) return;
+
+      var val = kalu.calculations.results[lineIdx];
+      var displayVal = val !== undefined && val !== "" ? " = " + val : "";
+
+      completions.push({
+        text: name,
+        displayText: name + displayVal,
+        render: function (li, data, completion) {
+          var nameSpan = document.createElement("span");
+          nameSpan.textContent = completion.text;
+          li.appendChild(nameSpan);
+          if (displayVal) {
+            var valSpan = document.createElement("span");
+            valSpan.className = "hint-value";
+            valSpan.textContent = displayVal;
+            li.appendChild(valSpan);
+          }
+        },
+      });
+    });
+
+    if (!completions.length) return;
+
+    return {
+      list: completions,
+      from: CodeMirror.Pos(cur.line, start),
+      to: CodeMirror.Pos(cur.line, end),
+    };
+  }
+
   // Initialize the application
   function init() {
     // Create tabs container inside app-shell, before the editor
@@ -915,6 +968,13 @@
       updateTimer = setTimeout(function () {
         kalu.updateCalculations();
       }, updateDelay);
+    });
+
+    // Auto-trigger autocomplete when typing letters or underscore
+    kalu.cm.on("inputRead", function (cm, change) {
+      if (change.text[0] && /[a-zA-Z_]/.test(change.text[0])) {
+        cm.showHint({ hint: kaluHint, completeSingle: false });
+      }
     });
 
     // Initialize settings panel
