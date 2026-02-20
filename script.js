@@ -960,6 +960,7 @@
       lineWrapping: true,
       autoCloseBrackets: true,
       autofocus: true,
+      cursorBlinkRate: 0,
     });
 
     // Set up change event handler

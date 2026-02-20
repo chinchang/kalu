@@ -40,7 +40,13 @@
 }
 
 .cm-s-kalu-dark .CodeMirror-cursor {
-  border-left: 2px solid var(--accent);
+  border-left: 3px solid var(--accent) !important;
+  animation: cursorFade 1.2s ease-in-out infinite;
+}
+
+@keyframes cursorFade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .cm-s-kalu-dark span.cm-comment {
