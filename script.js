@@ -12,6 +12,82 @@
   // Store for calculation results and their dependencies
   kalu.calculations = {}; // Will store calculation data for each page
 
+  // ─── Settings ──────────────────────────────────────────
+  kalu.accentPresets = {
+    green:  { color: "#00d4aa", rgb: "0,212,170" },
+    orange: { color: "#f0a050", rgb: "240,160,80" },
+    pink:   { color: "#ff6b8a", rgb: "255,107,138" },
+    white:  { color: "#c8d3e0", rgb: "200,211,224" },
+    yellow: { color: "#f0c674", rgb: "240,198,116" },
+  };
+
+  kalu.settings = { accent: "green" };
+
+  kalu.loadSettings = function () {
+    try {
+      const saved = JSON.parse(localStorage.getItem("kalu_settings") || "{}");
+      if (saved.accent && kalu.accentPresets[saved.accent]) {
+        kalu.settings.accent = saved.accent;
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  kalu.saveSettings = function () {
+    localStorage.setItem("kalu_settings", JSON.stringify(kalu.settings));
+  };
+
+  kalu.applyAccentColor = function (name) {
+    const preset = kalu.accentPresets[name];
+    if (!preset) return;
+
+    kalu.settings.accent = name;
+    const root = document.documentElement;
+    root.style.setProperty("--accent", preset.color);
+    root.style.setProperty("--accent-rgb", preset.rgb);
+
+    // Update swatch active state
+    const swatches = document.querySelectorAll("#accent-swatches .swatch");
+    swatches.forEach(function (sw) {
+      sw.classList.toggle("active", sw.dataset.accent === name);
+    });
+
+    kalu.saveSettings();
+  };
+
+  kalu.initSettings = function () {
+    const btn = document.getElementById("settings-btn");
+    const pane = document.getElementById("settings-pane");
+    const backdrop = document.getElementById("settings-backdrop");
+    const closeBtn = document.getElementById("settings-close");
+    const swatches = document.querySelectorAll("#accent-swatches .swatch");
+
+    function openSettings() {
+      pane.classList.add("open");
+      backdrop.classList.add("open");
+    }
+
+    function closeSettings() {
+      pane.classList.remove("open");
+      backdrop.classList.remove("open");
+    }
+
+    btn.addEventListener("click", openSettings);
+    closeBtn.addEventListener("click", closeSettings);
+    backdrop.addEventListener("click", closeSettings);
+
+    swatches.forEach(function (sw) {
+      sw.addEventListener("click", function () {
+        kalu.applyAccentColor(sw.dataset.accent);
+      });
+    });
+
+    // Load and apply saved settings
+    kalu.loadSettings();
+    kalu.applyAccentColor(kalu.settings.accent);
+  };
+
   // Configuration
   const updateDelay = 100;
   let updateTimer;
@@ -840,6 +916,9 @@
         kalu.updateCalculations();
       }, updateDelay);
     });
+
+    // Initialize settings panel
+    kalu.initSettings();
 
     // Load pages from localStorage or create default page
     kalu.loadPagesFromLocalStorage();
