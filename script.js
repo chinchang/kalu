@@ -369,34 +369,33 @@
 
   // Find all variable references in an expression
   kalu.findVariableReferences = function (expr) {
-    // Match variable names that aren't part of longer names
     const variableRegex =
       /(?<![a-zA-Z0-9_])([a-zA-Z][a-zA-Z0-9_]*)(?![a-zA-Z0-9_])/g;
-    const matches = expr.match(variableRegex) || [];
 
-    // Filter out common math functions and constants that might be matched
     const mathFunctions = [
-      "sin",
-      "cos",
-      "tan",
-      "log",
-      "exp",
-      "sqrt",
-      "abs",
-      "ceil",
-      "floor",
-      "round",
-      "max",
-      "min",
+      "sin", "cos", "tan", "log", "exp", "sqrt",
+      "abs", "ceil", "floor", "round", "max", "min",
     ];
     const mathConstants = ["pi", "e"];
 
-    return matches.filter(
-      (match) =>
-        !mathFunctions.includes(match) &&
-        !mathConstants.includes(match) &&
-        !match.startsWith("_") // Exclude calculation references
-    );
+    const matches = [];
+    let match;
+    while ((match = variableRegex.exec(expr)) !== null) {
+      const name = match[1];
+      if (
+        !mathFunctions.includes(name) &&
+        !mathConstants.includes(name) &&
+        !name.startsWith("_")
+      ) {
+        matches.push({
+          name: name,
+          index: match.index,
+          length: name.length,
+        });
+      }
+    }
+
+    return matches;
   };
 
   // Find line index by ID
@@ -508,6 +507,51 @@
     });
 
     // Add the marker to the editor
+    const highlightMarker = kalu.cm.markText(
+      { line: lineIndex, ch: start },
+      { line: lineIndex, ch: end },
+      {
+        replacedWith: marker,
+        handleMouseEvents: true,
+      }
+    );
+
+    referenceHighlights.push(highlightMarker);
+  };
+
+  // Highlight a variable reference in the editor
+  kalu.highlightVariableReference = function (lineIndex, start, end, varName, targetLineIndex) {
+    if (targetLineIndex === -1 || targetLineIndex === lineIndex) return;
+
+    // Build tooltip label
+    const targetLine = kalu.cm.getLine(targetLineIndex);
+    const result = kalu.calculations.results[targetLineIndex];
+    let label = varName;
+    if (result !== undefined && result !== "") {
+      label = varName + " = " + result;
+    }
+
+    // Create a marker element (same style as calc references)
+    const marker = document.createElement("span");
+    marker.className = "reference-highlight";
+    marker.textContent = varName;
+    marker.title = label;
+    marker.dataset.targetLine = targetLineIndex;
+    marker.addEventListener("mouseover", function () {
+      kalu.cm.addLineClass(targetLineIndex, "background", "highlighted-line");
+    });
+    marker.addEventListener("mouseout", function () {
+      kalu.cm.removeLineClass(targetLineIndex, "background", "highlighted-line");
+    });
+    marker.addEventListener("click", function (e) {
+      e.stopPropagation();
+      kalu.cm.scrollIntoView({ line: targetLineIndex, ch: 0 }, 100);
+      kalu.cm.addLineClass(targetLineIndex, "background", "target-line-highlight");
+      setTimeout(function () {
+        kalu.cm.removeLineClass(targetLineIndex, "background", "target-line-highlight");
+      }, 1500);
+    });
+
     const highlightMarker = kalu.cm.markText(
       { line: lineIndex, ch: start },
       { line: lineIndex, ch: end },
@@ -638,17 +682,17 @@
 
       // Add variable dependencies
       varRefs.forEach((ref) => {
-        if (variables[ref] !== undefined && variables[ref] !== lineIndex) {
-          kalu.calculations.dependencies[lineIndex].push(variables[ref]);
+        if (variables[ref.name] !== undefined && variables[ref.name] !== lineIndex) {
+          kalu.calculations.dependencies[lineIndex].push(variables[ref.name]);
 
           // Record dependents
-          if (!kalu.calculations.dependents[variables[ref]]) {
-            kalu.calculations.dependents[variables[ref]] = [];
+          if (!kalu.calculations.dependents[variables[ref.name]]) {
+            kalu.calculations.dependents[variables[ref.name]] = [];
           }
           if (
-            !kalu.calculations.dependents[variables[ref]].includes(lineIndex)
+            !kalu.calculations.dependents[variables[ref.name]].includes(lineIndex)
           ) {
-            kalu.calculations.dependents[variables[ref]].push(lineIndex);
+            kalu.calculations.dependents[variables[ref.name]].push(lineIndex);
           }
         }
       });
@@ -722,6 +766,19 @@
             ref.index + ref.ref.length,
             ref.id
           );
+        });
+
+        // Highlight variable references in this line
+        varRefs.forEach((ref) => {
+          if (variables[ref.name] !== undefined && variables[ref.name] !== lineIndex) {
+            kalu.highlightVariableReference(
+              lineIndex,
+              ref.index,
+              ref.index + ref.length,
+              ref.name,
+              variables[ref.name]
+            );
+          }
         });
       } catch (e) {
         // If evaluation fails, store the error
@@ -804,7 +861,7 @@
     // Update all dependents of changed lines
     changedLines.forEach(updateDependents);
 
-    // Find and highlight all calculation references again after updates
+    // Find and highlight all references again after updates
     lines.forEach((line, lineIndex) => {
       if (line.trim() === "" || line.match(/^\s*\/\//)) {
         return; // Skip empty lines and comments
@@ -818,6 +875,19 @@
           ref.index + ref.ref.length,
           ref.id
         );
+      });
+
+      const varRefs = kalu.findVariableReferences(line);
+      varRefs.forEach((ref) => {
+        if (variables[ref.name] !== undefined && variables[ref.name] !== lineIndex) {
+          kalu.highlightVariableReference(
+            lineIndex,
+            ref.index,
+            ref.index + ref.length,
+            ref.name,
+            variables[ref.name]
+          );
+        }
       });
     });
 
