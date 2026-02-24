@@ -954,10 +954,13 @@
       return;
     }
 
-    // Insert the calculation reference instead of the raw value
-    const reference = e.target.dataset.reference;
-    const selections = kalu.cm.listSelections();
+    // If the line has a variable assignment, use the variable name; otherwise use _calcN
+    const lineIndex = parseInt(e.target.dataset.lineIndex);
+    const line = kalu.cm.getLine(lineIndex);
+    const assignment = line ? kalu.parseVariableAssignment(line) : null;
+    const reference = assignment ? assignment.variable : e.target.dataset.reference;
 
+    const selections = kalu.cm.listSelections();
     selections.forEach(function (selection) {
       kalu.cm.replaceRange(reference, selection.anchor, selection.head);
     });
